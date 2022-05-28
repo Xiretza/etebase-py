@@ -1,4 +1,4 @@
-#![allow(non_snake_case, unused)]
+#![warn(clippy::pedantic)]
 
 mod fixes {
     #[derive(Clone)]
@@ -11,6 +11,7 @@ mod fixes {
     }
 
     impl FetchOptions {
+        #[allow(clippy::new_without_default)]
         pub fn new() -> Self {
             Self {
                 limit: None,
@@ -41,7 +42,7 @@ mod fixes {
             self.stoken = stoken.map(str::to_string);
         }
 
-        pub fn to_fetch_options<'a>(&'a self) -> etebase::FetchOptions<'a> {
+        pub fn to_fetch_options(&self) -> etebase::FetchOptions<'_> {
             let mut ret = etebase::FetchOptions::new();
             if let Some(limit) = self.limit {
                 ret = ret.limit(limit);
@@ -59,6 +60,8 @@ mod fixes {
     }
 }
 
+#[allow(clippy::all, clippy::pedantic)]
+#[allow(non_snake_case, unused)]
 mod glue {
     include!(concat!(env!("OUT_DIR"), "/glue.rs"));
 }
