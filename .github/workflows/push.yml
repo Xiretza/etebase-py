@@ -24,7 +24,16 @@ jobs:
       - run: |
           python -m pip install .
           python -m pip install pytest
-      - run: pytest
+
+      - name: Run local test Server
+        run: |
+          docker run -d -p 3735:3735 etesync/test-server:latest
+          ./.github/scripts/wait-for-it.sh localhost:3735
+
+      - run: |
+          python_version=$(python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))')
+          ln -s "../build/lib.linux-x86_64-${python_version}/etebase_python.cpython-${python_version}-x86_64-linux-gnu.so" etebase/
+          pytest
 
   rust-formatting:
     name: Rust code formatting
