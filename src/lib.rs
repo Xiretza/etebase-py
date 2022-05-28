@@ -59,4 +59,6 @@ mod fixes {
     }
 }
 
-include!(concat!(env!("OUT_DIR"), "/glue.rs"));
+mod glue {
+    include!(concat!(env!("OUT_DIR"), "/glue.rs"));
+}
