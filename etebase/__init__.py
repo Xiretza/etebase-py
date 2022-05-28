@@ -124,8 +124,14 @@ class Account:
         return self._inner.save(encryption_key)
 
     @classmethod
-    def restore(cls, client: Client, account_data_stored: str, encryption_key: t.Optional[bytes]):
-        return cls(etebase_python.Account.restore(client._inner, account_data_stored, encryption_key))
+    def restore(
+        cls, client: Client, account_data_stored: str, encryption_key: t.Optional[bytes]
+    ):
+        return cls(
+            etebase_python.Account.restore(
+                client._inner, account_data_stored, encryption_key
+            )
+        )
 
 
 class RemovedCollection:
@@ -155,7 +161,9 @@ class CollectionListResponse:
 
     @property
     def removed_memberships(self):
-        return map(lambda x: RemovedCollection(x), self._inner.get_removed_memberships())
+        return map(
+            lambda x: RemovedCollection(x), self._inner.get_removed_memberships()
+        )
 
 
 class ItemListResponse:
@@ -227,7 +235,7 @@ class CollectionManager:
     def __init__(self, inner: etebase_python.CollectionManager):
         self._inner = inner
 
-    def fetch(self, col_uid: str, fetch_options: t.Optional[FetchOptions]=None):
+    def fetch(self, col_uid: str, fetch_options: t.Optional[FetchOptions] = None):
         return Collection(self._inner.fetch(col_uid, _inner(fetch_options)))
 
     def create(self, col_type: str, meta: t.Dict, content: bytes):
@@ -240,36 +248,50 @@ class CollectionManager:
     def get_item_manager(self, col: "Collection"):
         return ItemManager(self._inner.get_item_manager(col._inner))
 
-    def list(self, col_type: t.Union[str, t.List[str]], fetch_options: t.Optional[FetchOptions]=None):
+    def list(
+        self,
+        col_type: t.Union[str, t.List[str]],
+        fetch_options: t.Optional[FetchOptions] = None,
+    ):
         if isinstance(col_type, str):
-            return CollectionListResponse(self._inner.list(col_type, _inner(fetch_options)))
+            return CollectionListResponse(
+                self._inner.list(col_type, _inner(fetch_options))
+            )
         else:
-            return CollectionListResponse(self._inner.list_multi(list(col_type), _inner(fetch_options)))
+            return CollectionListResponse(
+                self._inner.list_multi(list(col_type), _inner(fetch_options))
+            )
 
-    def upload(self, collection: "Collection", fetch_options: t.Optional[FetchOptions]=None):
+    def upload(
+        self, collection: "Collection", fetch_options: t.Optional[FetchOptions] = None
+    ):
         self._inner.upload(collection._inner, _inner(fetch_options))
 
-    def transaction(self, collection: "Collection", fetch_options: t.Optional[FetchOptions]=None):
+    def transaction(
+        self, collection: "Collection", fetch_options: t.Optional[FetchOptions] = None
+    ):
         self._inner.transaction(collection._inner, _inner(fetch_options))
 
     def cache_load(self, cached: bytes):
         return Collection(self._inner.cache_load(cached))
 
-    def cache_save(self, collection: "Collection", with_content: bool=True):
+    def cache_save(self, collection: "Collection", with_content: bool = True):
         if with_content:
             return bytes(self._inner.cache_save_with_content(collection._inner))
         else:
             return bytes(self._inner.cache_save(collection._inner))
 
     def get_member_manager(self, collection: "Collection"):
-        return CollectionMemberManager(self._inner.get_member_manager(collection._inner))
+        return CollectionMemberManager(
+            self._inner.get_member_manager(collection._inner)
+        )
 
 
 class ItemManager:
     def __init__(self, inner: etebase_python.ItemManager):
         self._inner = inner
 
-    def fetch(self, col_uid, fetch_options: t.Optional[FetchOptions]=None):
+    def fetch(self, col_uid, fetch_options: t.Optional[FetchOptions] = None):
         return Item(self._inner.fetch(col_uid, _inner(fetch_options)))
 
     def create(self, meta: t.Dict, content: bytes):
@@ -279,25 +301,47 @@ class ItemManager:
     def create_raw(self, meta: bytes, content: bytes):
         return Item(self._inner.create_raw(meta, content))
 
-    def list(self, fetch_options: t.Optional[FetchOptions]=None):
+    def list(self, fetch_options: t.Optional[FetchOptions] = None):
         return ItemListResponse(self._inner.list(_inner(fetch_options)))
 
-    def item_revisions(self, item: "Item", fetch_options: t.Optional[FetchOptions]=None):
-        return ItemRevisionsListResponse(self._inner.item_revisions(item._inner, _inner(fetch_options)))
+    def item_revisions(
+        self, item: "Item", fetch_options: t.Optional[FetchOptions] = None
+    ):
+        return ItemRevisionsListResponse(
+            self._inner.item_revisions(item._inner, _inner(fetch_options))
+        )
 
-    def fetch_updates(self, items: t.List["Item"], fetch_options: t.Optional[FetchOptions]=None):
+    def fetch_updates(
+        self, items: t.List["Item"], fetch_options: t.Optional[FetchOptions] = None
+    ):
         items_inner = list(map(lambda x: x._inner, items))
-        return ItemListResponse(self._inner.fetch_updates(items_inner, _inner(fetch_options)))
+        return ItemListResponse(
+            self._inner.fetch_updates(items_inner, _inner(fetch_options))
+        )
 
-    def fetch_multi(self, items_uids: t.List[str], fetch_options: t.Optional[FetchOptions]=None):
-        return ItemListResponse(self._inner.fetch_multi(items_uids, _inner(fetch_options)))
+    def fetch_multi(
+        self, items_uids: t.List[str], fetch_options: t.Optional[FetchOptions] = None
+    ):
+        return ItemListResponse(
+            self._inner.fetch_multi(items_uids, _inner(fetch_options))
+        )
 
-    def batch(self, items: t.List["Item"], deps: t.List["Item"]=None, fetch_options: t.Optional[FetchOptions]=None):
+    def batch(
+        self,
+        items: t.List["Item"],
+        deps: t.List["Item"] = None,
+        fetch_options: t.Optional[FetchOptions] = None,
+    ):
         items_inner = list(map(lambda x: x._inner, items))
         deps_inner = list(map(lambda x: x._inner, deps)) if deps is not None else None
         self._inner.batch(items_inner, deps_inner, _inner(fetch_options))
 
-    def transaction(self, items: t.List["Item"], deps: t.List["Item"]=None, fetch_options: t.Optional[FetchOptions]=None):
+    def transaction(
+        self,
+        items: t.List["Item"],
+        deps: t.List["Item"] = None,
+        fetch_options: t.Optional[FetchOptions] = None,
+    ):
         items_inner = list(map(lambda x: x._inner, items))
         deps_inner = list(map(lambda x: x._inner, deps)) if deps is not None else None
         self._inner.transaction(items_inner, deps_inner, _inner(fetch_options))
@@ -311,7 +355,7 @@ class ItemManager:
     def cache_load(self, cached: bytes):
         return Item(self._inner.cache_load(cached))
 
-    def cache_save(self, item: "Item", with_content: bool=True):
+    def cache_save(self, item: "Item", with_content: bool = True):
         if with_content:
             return bytes(self._inner.cache_save_with_content(item._inner))
         else:
@@ -474,10 +518,10 @@ class CollectionInvitationManager:
     def __init__(self, inner: etebase_python.CollectionInvitationManager):
         self._inner = inner
 
-    def list_incoming(self, fetch_options: t.Optional[FetchOptions]=None):
+    def list_incoming(self, fetch_options: t.Optional[FetchOptions] = None):
         return InvitationListResponse(self._inner.list_incoming(_inner(fetch_options)))
 
-    def list_outgoing(self, fetch_options: t.Optional[FetchOptions]=None):
+    def list_outgoing(self, fetch_options: t.Optional[FetchOptions] = None):
         return InvitationListResponse(self._inner.list_outgoing(_inner(fetch_options)))
 
     def accept(self, signed_invitation: "SignedInvitation"):
@@ -489,7 +533,13 @@ class CollectionInvitationManager:
     def fetch_user_profile(self, username: str):
         return UserProfile(self._inner.fetch_user_profile(username))
 
-    def invite(self, collection: Collection, username: str, pubkey: bytes, access_level: "CollectionAccessLevel"):
+    def invite(
+        self,
+        collection: Collection,
+        username: str,
+        pubkey: bytes,
+        access_level: "CollectionAccessLevel",
+    ):
         self._inner.invite(collection._inner, username, pubkey, access_level)
 
     def disinvite(self, signed_invitation: "SignedInvitation"):
@@ -563,7 +613,7 @@ class CollectionMemberManager:
     def __init__(self, inner: etebase_python.CollectionMemberManager):
         self._inner = inner
 
-    def list(self, fetch_options: t.Optional[FetchOptions]=None):
+    def list(self, fetch_options: t.Optional[FetchOptions] = None):
         return MemberListResponse(self._inner.list(_inner(fetch_options)))
 
     def remove(self, username: str):
